@@ -9,10 +9,10 @@
     "start": "npm run build && node ./dist/index.js",
     "clean": "rm -r ./dist/",
     "test": "npm run build && jest",
-    "release": "npm run build && npm publish"
+    "release": "npm run build && npm publish --access public"
   },
   "author": "Subhrajyoty Roy",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@types/jest": "^29.5.0",
     "@types/node": "^18.15.11",
