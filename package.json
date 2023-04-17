@@ -5,10 +5,10 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "jest",
     "build": "npx tsc",
     "start": "npm run build && node ./dist/index.js",
     "clean": "rm -r ./dist/",
+    "test": "npm run build && jest",
     "release": "npm run build && npm publish"
   },
   "author": "Subhrajyoty Roy",
