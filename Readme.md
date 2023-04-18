@@ -39,7 +39,7 @@ for (const item of result.profile) {
 }
 ```
 
-For more detailed information on how to use "callgrind-reader", see the [documentation]().
+For more detailed information on how to use "callgrind-reader", see the [documentation](https://github.com/subroy13/callgrind-reader/tree/master/docs/index.html).
 
 ## Contribution
 
@@ -47,4 +47,4 @@ Contributions to "callgrind-reader" are welcome! If you encounter a bug or want 
 
 ## License
 
-"callgrind-reader" is released under the [MIT License](https://github.com/subroy13/callgrind-reader/LICENSE).
+"callgrind-reader" is released under the [MIT License](https://github.com/subroy13/callgrind-reader/blob/master/LICENSE).

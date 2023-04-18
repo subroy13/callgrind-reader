@@ -5,24 +5,83 @@ import { CallGrindParseOutput, ProfileDatabase } from "./interface";
 import { CallGrindKeywords } from "./keywords";
 
 /**
- * CallGrind File Description Reference: https://valgrind.org/docs/manual/cl-format.html
+ * This class provides a parser for callgrind files. It can be used to extract
+ * profile information from the callgrind file. Specification of callgrind type
+ * files can be found in [valgrind](https://valgrind.org/docs/manual/cl-format.html) website.
  */
 export class CallGrind {
 
+    /**
+     * The `readline.Interface` instance that is used to read the file.
+     * 
+     * @private
+     */
     private fstream: readline.Interface;
+
+    /**
+     * The profile database that stores the extracted profile information.
+     * 
+     * @private
+     */
     private profiledb: ProfileDatabase = {};
-    private header: {[key: string]: any;} = {};
+
+    /**
+     * The header section of the callgrind file.
+     * 
+     * @public
+     */
+    public header: {[key: string]: any;} = {};
+
+    /**
+     * The current scope of the parser.
+     * 
+     * @private
+     */
     private scope: {
         section: string;
         parameters?: {[field: string]: string;}
     } = {section: "header"}
+
+    /**
+     * The list of events specified in the callgrind file.
+     * 
+     * @private
+     */
     private eventList: string[] = [];
+
+    /**
+     * The list of files specified in the callgrind file.
+     * 
+     * @private
+     */
     private fileList: {[fkey: string]: string} = {};
+
+    /**
+     * The list of functions specified in the callgrind file.
+     * 
+     * @private
+     */
     private functionList: {[fkey: string]: string} = {};
+
+    /**
+     * The list of error lines encountered during parsing.
+     * 
+     * @public
+     */
     public errorLines: string[] = [];
 
-    
+    /**
+     * The regular expression for matching header lines.
+     * 
+     * @private
+     */
     private HEADER_REGEX = /^(\w+):\s(.*)$/;
+
+    /**
+     * The regular expression list for matching different types of lines.
+     * 
+     * @private
+     */
     private REGEXLIST = {
         [CallGrindKeywords.File]: /^fl=(\(\d\))?([^=\n\(\)]+)?$/,
         [CallGrindKeywords.Function]: /^fn=(\(\d\))?([^=\n\(\)]+)?$/,
@@ -31,6 +90,12 @@ export class CallGrind {
         [CallGrindKeywords.CallFunction]: /^cfn=(\(\d\))?([^=\n\(\)]+)?$/,
     }
 
+    /**
+     * Creates an instance of `CallGrind`.
+     * 
+     * @param {string | Readable} file - The `file` parameter is either a string representing the path
+     * to a file or a `Readable` stream for the callgrind file to be parsed.
+     */
     constructor(file: string | Readable) {
         this.fstream = readline.createInterface({
             input: (typeof file === "string") ? createReadStream(file, { encoding: "utf-8" }) : file,
@@ -38,6 +103,11 @@ export class CallGrind {
         });
     }
 
+    /**
+     * Parses the callgrind file and returns the extracted profile information.
+     * 
+     * @returns A promise that resolves to the extracted profile information.
+     */
     async parse(): Promise<CallGrindParseOutput> {
         this.errorLines = [];
         return new Promise((resolve, reject) => {
@@ -54,10 +124,23 @@ export class CallGrind {
         })
     }
 
+    /**
+     * Checks if a line is a comment line.
+     * 
+     * @param line - The line to be checked.
+     * @returns `true` if the line is a comment line, `false` otherwise.
+     * @private
+     */
     private isCommentLine(line: string): boolean {
         return (line.startsWith(CallGrindKeywords.CommentChar));
     }
 
+    /**
+     * Returns the current scope of the parser.
+     * 
+     * @returns The current scope of the parser.
+     * @private
+     */
     private getScope(): { file: {id: string; name: string;}, function: { id: string; name: string; }} {
         return {
             file: {
@@ -71,6 +154,12 @@ export class CallGrind {
         };
     }
 
+    /**
+     * Returns the current scope of the caller function in the parser.
+     * 
+     * @returns The current scope of the caller function in the parser.
+     * @private
+     */
     private getCallerScope(): { file: {id: string; name: string;}, function: { id: string; name: string; }} {
         return {
             file: {
@@ -85,7 +174,12 @@ export class CallGrind {
     }
 
 
-
+    /**
+     * Parses a single line of a Callgrind file asynchronously, updating the internal states of the CallGrind object.
+     * 
+     * @param line A single line from a Callgrind file.
+     * @returns A Promise that resolves to void.
+     */
     private parseLine(line: string) {
         const cleanLine = line.trim();      // remove extra spaces if any
 
@@ -181,14 +275,6 @@ export class CallGrind {
             } else if (line.match(/^calls=(\d+)\s(\d+)$/) && this.scope.section === "caller") {
                 const callcount = parseInt((line.match(/^calls=(\d+)\s(\d+)$/))?.[1] ?? "0");
                 const scope = this.getCallerScope();
-                // TODO: CHECK THIS 
-                // const parentscope = this.getScope();
-                // if (this.profiledb[`${parentscope.file.id}__${parentscope.function.id}`].events?.["__callcount"]) {
-                //      // since the parent being called 10 times, for each time, 
-                //      // child is being called 50 times, 
-                //      // in total 500 calls to child function
-                //     callcount *= this.profiledb[`${parentscope.file.id}__${parentscope.function.id}`].events?.["__callcount"];     
-                // }
                 const scopeKey = `${scope.file.id}__${scope.function.id}`;
                 if (!this.profiledb?.[scopeKey]) {
                     this.profiledb[scopeKey] = {
