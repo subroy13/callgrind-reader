@@ -1,6 +1,6 @@
 {
   "name": "callgrind-reader",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "This package provides utility functions for reading and parsing a callgrind type file",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
