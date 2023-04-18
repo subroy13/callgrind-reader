@@ -39,7 +39,7 @@ for (const item of result.profile) {
 }
 ```
 
-For more detailed information on how to use "callgrind-reader", see the [documentation](https://github.com/subroy13/callgrind-reader/tree/master/docs/index.html).
+For more detailed information on how to use "callgrind-reader", see the [documentation](https://subroy13.github.io/callgrind-reader/).
 
 ## Contribution
 
