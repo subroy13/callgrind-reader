@@ -2,6 +2,10 @@
 
 The "callgrind-reader" package is a Node.js library for parsing and analyzing profiling information from callgrind and cachegrind files. With this library, you can easily extract useful insights from your profiling data, such as total cycles, instructions, and flops. This package is useful for developers who need to optimize their code and want to identify which functions are taking the most time or resources.
 
+The package [`callgrind-reader`](https://www.npmjs.com/package/callgrind-reader) is available to download in `npm`.
+
+![npm](https://img.shields.io/npm/dm/callgrind-reader)
+
 ## Features
 
 - Parses callgrind and cachegrind files to extract profiling data
